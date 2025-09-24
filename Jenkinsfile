@@ -63,7 +63,7 @@ pipeline {
                         sh """
                             echo "Changing machine type of ${host.name} to ${host.new_machine_type}"
                             gcloud compute instances set-machine-type ${host.name} \
-                                --machine-type=${host.new_machine_type} \
+                                --machine-type= ${host.new_machine_type} \
                                 --project ${env.PROJECT_ID} \
                                 --zone ${host.zone} \
                                 --quiet
