@@ -1,7 +1,14 @@
 pipeline {
     agent any
-
+    environment {
+        PATH = "/usr/local/bin:$PATH"
+    }
     stages {
+        stage('Verify gcloud') {
+            steps {
+                sh 'gcloud --version'
+            }
+        }
         stage("Activate Service Account") {
             steps {
                 withCredentials([file(credentialsId: "GCP_service_account", variable: 'SA')]) {
