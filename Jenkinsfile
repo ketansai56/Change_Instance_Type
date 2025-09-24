@@ -1,12 +1,12 @@
-@Library('gcp-jenkins-library@1.97.0') _
-def containerAgent = libraryResource 'agent.yaml'
+// @Library('gcp-jenkins-library@1.97.0') _
+// def containerAgent = libraryResource 'agent.yaml'
 
 pipeline {
     agent {
         kubernetes {
             label 'vm_type_change'
             defaultContainer 'jnlp'
-            yaml "$containerAgent"
+            // yaml "$containerAgent"
         }
     }
 
