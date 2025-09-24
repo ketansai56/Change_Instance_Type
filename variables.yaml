@@ -2,4 +2,4 @@ project_id: "gke-practice-471804"
 hosts:
   - name: "instance-20250924-102442"
     zone: "us-central1-c"
-    new_machine_type: e2-medium
+    new_machine_type: "e2-medium"
