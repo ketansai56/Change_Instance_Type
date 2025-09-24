@@ -34,7 +34,8 @@ pipeline {
                 script {
                     def vars = readYaml(file: 'variables.yaml')
                     env.PROJECT_ID = vars.project_id
-                    env.HOSTS = vars.hosts
+                    // Save hosts as a Groovy list
+                    env.HOSTS_LIST = vars.hosts
                 }
             }
         }
@@ -42,11 +43,13 @@ pipeline {
         stage("Stop VM Instances") {
             steps {
                 script {
-                    for (host in env.HOSTS) {
+                    for (host in env.HOSTS_LIST) {
                         sh """
+                            echo "Stopping VM: ${host.name}"
                             gcloud compute instances stop ${host.name} \
                                 --project ${env.PROJECT_ID} \
-                                --zone ${host.zone}
+                                --zone ${host.zone} \
+                                --quiet
                         """
                     }
                 }
@@ -56,12 +59,14 @@ pipeline {
         stage("Change VM Instance Type") {
             steps {
                 script {
-                    for (host in env.HOSTS) {
+                    for (host in env.HOSTS_LIST) {
                         sh """
+                            echo "Changing machine type of ${host.name} to ${host.new_machine_type}"
                             gcloud compute instances set-machine-type ${host.name} \
                                 --machine-type=${host.new_machine_type} \
                                 --project ${env.PROJECT_ID} \
-                                --zone ${host.zone}
+                                --zone ${host.zone} \
+                                --quiet
                         """
                     }
                 }
@@ -71,17 +76,19 @@ pipeline {
         stage("Start VM Instances & Validate") {
             steps {
                 script {
-                    for (host in env.HOSTS) {
+                    for (host in env.HOSTS_LIST) {
                         sh """
+                            echo "Starting VM: ${host.name}"
                             gcloud compute instances start ${host.name} \
                                 --project ${env.PROJECT_ID} \
-                                --zone ${host.zone}
+                                --zone ${host.zone} \
+                                --quiet
                         """
 
                         def appliedType = sh(
                             script: "gcloud compute instances describe ${host.name} --project ${env.PROJECT_ID} --zone ${host.zone} --format='get(machineType)'",
                             returnStdout: true
-                        ).trim().split('/').last() 
+                        ).trim().split('/').last()
 
                         if (appliedType == host.new_machine_type) {
                             echo "✅ VM ${host.name} successfully resized to ${appliedType}"
