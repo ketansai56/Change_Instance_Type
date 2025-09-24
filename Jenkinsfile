@@ -2,14 +2,16 @@
 // def containerAgent = libraryResource 'agent.yaml'
 
 pipeline {
-    agent {
-        kubernetes {
-            label 'vm_type_change'
-            defaultContainer 'jnlp'
-            // yaml "$containerAgent"
-        }
-    }
-
+    // agent {
+    //     // kubernetes {
+    //     //     // label 'vm_type_change'
+    //     //     // defaultContainer 'jnlp'
+    //     //     // yaml "$containerAgent"
+            
+    //     // }
+        
+    // }
+    agent any
     stages {
         stage("Activate Service Account") {
             steps {
